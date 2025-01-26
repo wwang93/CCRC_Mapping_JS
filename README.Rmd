@@ -21,4 +21,8 @@ data folder, private: https://liveutk-my.sharepoint.com/personal/csublet1_utk_ed
 
 ## Wei update the app on Jan 26th.
 
-we still use shiny, but drop off the mapboxer package, use JS for both supply and demand.
+we still use shiny, but drop off the mapboxer package, use JS for both supply and demand. We just finish HOver for demand side, I will try to update the supply side once Cameron determine the requirements.
+
+To run this app locally, set up the map token, like " Sys.getenv("MAPBOX_TOKEN")"
+
+The hover UI: ![Hover UI](Images/Hover.png)
