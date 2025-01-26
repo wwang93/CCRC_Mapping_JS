@@ -1,0 +1,16 @@
+Version: 1.0
+ProjectId: 17f59096-76c9-4703-b5ea-cf384bf2b43c
+
+RestoreWorkspace: Default
+SaveWorkspace: Default
+AlwaysSaveHistory: Default
+
+EnableCodeIndexing: Yes
+UseSpacesForTab: Yes
+NumSpacesForTab: 2
+Encoding: UTF-8
+
+RnwWeave: Sweave
+LaTeX: pdfLaTeX
+
+ProjectName: CCRC_Mapping_JS
