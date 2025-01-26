@@ -11,7 +11,7 @@ county_population <- get_acs(
   geography = "county",
   variables = "B01003_001E", # Total population variable
   year = 2021,
-  survey = "acs5"           # 5年期数据
+  survey = "acs5"           # 5-year data
 )
 
 head(county_population)
