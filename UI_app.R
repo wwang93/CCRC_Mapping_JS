@@ -2,6 +2,7 @@ library(shiny)
 library(jsonlite)
 library(geojsonio)
 library(dplyr)
+source("mapboxtoken_setup.R")
 
 # Load data
 hdallyears <- readRDS("hdallyears.rds")
@@ -18,48 +19,47 @@ hdallyears_joined <- hdallyears %>%
 
 # UI
 ui <- fluidPage(
-  titlePanel("CCRC Mapping with Mapbox GL JS"),
+  titlePanel("CCRC Green Job Seek Mapping"),
   
+  # 整个页面分成左右两列：
   fluidRow(
-    column(
-      width = 10,
-      div(
-        style = "display: flex; align-items: center;",
-        textInput("search_term", "Search by Institution:",
-                  placeholder = "Type institution here...", width = "100%"),
-        actionButton("search_btn", "Search", style = "margin-left: 10px;"),
-        # Use HTML buttons and bind the clearMap() function directly to the frontend.
-        tags$button("Clear", onclick = "clearMap()", style = "margin-left: 10px;", class = "btn btn-default")
-      )
+    # 左侧：供给类别选择器，占3/12宽度
+    column(3,
+           wellPanel(
+             selectInput("selected_green_category",
+                         "Select Supply Category:",
+                         choices = c("Green New & Emerging", 
+                                     "Green Enhanced Skills", 
+                                     "Green Increased Demand"))
+           )
+    ),
+    # 右侧：上方搜索控件，下方地图，占9/12宽度
+    column(9,
+           wellPanel(
+             fluidRow(
+               column(8,
+                      textInput("search_term", "Search by Institution:",
+                                placeholder = "Type institution here...", width = "100%")
+               ),
+               column(4,
+                      div(style = "margin-top: 25px;",
+                          actionButton("search_btn", "Search"),
+                          # 使用 HTML 按钮绑定前端的 clearMap() 函数
+                          tags$button("Clear", onclick = "clearMap()", 
+                                      style = "margin-left: 10px;", class = "btn btn-default")
+                      )
+               )
+             )
+           ),
+           # 地图区域
+           div(id = "map", style = "height: 700px;")
     )
   ),
   
-  fluidRow(
-    column(6, align = "center",
-           selectInput("selected_green_category",
-                       "Select Supply Category:",
-                       choices = c("Green New & Emerging", "Green Enhanced Skills", "Green Increased Demand"))
-    )
-  ),
-  
- 
-  
-  # Map output with JavaScript integration
-  fluidRow(
-    column(12, tags$div(id = "map", style = "height: 700px;"))
-  ),
-  
-  # Include Mapbox GL JS resources and our custom JS file
-  tags$head(
-    tags$link(href = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css", rel = "stylesheet"),
-    tags$script(src = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"),
-    tags$script(src = "mapbox-script.js"),
-    tags$script(HTML(paste0("const mapboxToken = '", Sys.getenv("MAPBOX_TOKEN"), "';")))
-  ),
-  
+  # 页脚
   fluidRow(
     column(
-      width = 12, align = "center",
+      12, align = "center",
       tags$footer(
         style = "margin-top: 20px; padding: 10px; font-size: 12px; background-color: #f8f9fa; border-top: 1px solid #e9ecef;",
         HTML("Created by Wei Wang, Joshua Rosenberg, and Cameron Sublet at the University of Tennessee, Knoxville with the Community College Research Center at Teachers College, Columbia. 
@@ -67,9 +67,15 @@ ui <- fluidPage(
               Thanks to funding from JC Morgan Chase.")
       )
     )
+  ),
+  
+  # 引入 Mapbox GL JS 资源和自定义 JS 文件
+  tags$head(
+    tags$link(href = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css", rel = "stylesheet"),
+    tags$script(src = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"),
+    tags$script(src = "mapbox-script.js"),
+    tags$script(HTML(paste0("const mapboxToken = '", mapbox_token, "';")))
   )
-  
-  
 )
 
 
@@ -125,6 +131,8 @@ server <- function(input, output, session) {
       showNotification("No Institution Found!", type = "error")
     }
   })
+  
+
   # Note: The Clear button calls the front-end clearMap() function directly in the UI.
   # So there's no need for an additional observeEvent to handle the Clear button here.
 }

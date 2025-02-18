@@ -20,13 +20,10 @@ Downlaod the data folder,rename it as raw-data.
 `pre-county-population.R` is used to create fake “demand” side data,
 which is US county level population data from tidycensus package.
 
-## Wei update the app on Jan 26th.
+## Wei update the app on Feb 18th.
 
-we still use shiny, but drop off the mapboxer package, use JS for both
-supply and demand. We just finish HOver for demand side, I will try to
-update the supply side once Cameron determine the requirements.
+UI_app.R and www/mapbox-script.JS are main files for the app.
 
-To run this app locally, set up the map token, like ”
-Sys.getenv(“MAPBOX_TOKEN”)”
+To run this app locally, set up the map token as a source file.
 
 The hover UI: ![Hover UI](Images/Hover.png)
