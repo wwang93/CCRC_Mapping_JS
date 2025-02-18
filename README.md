@@ -24,6 +24,8 @@ which is US county level population data from tidycensus package.
 
 UI_app.R and www/mapbox-script.JS are main files for the app.
 
+APP website：https://ed-analytics.shinyapps.io/CCRC_Mapping_JS/
+
 To run this app locally, set up the map token as a source file.
 
 The hover UI: ![Hover UI](Images/Hover.png)
