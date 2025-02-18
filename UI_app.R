@@ -21,9 +21,9 @@ hdallyears_joined <- hdallyears %>%
 ui <- fluidPage(
   titlePanel("CCRC Green Job Seek Mapping"),
   
-  # 整个页面分成左右两列：
+  # The entire page is divided into left and right columns:
   fluidRow(
-    # 左侧：供给类别选择器，占3/12宽度
+    # Left: supply category selector, 3/12 of width
     column(3,
            wellPanel(
              selectInput("selected_green_category",
@@ -33,7 +33,7 @@ ui <- fluidPage(
                                      "Green Increased Demand"))
            )
     ),
-    # 右侧：上方搜索控件，下方地图，占9/12宽度
+    # Right side: search controls above, map below, 9/12ths of width
     column(9,
            wellPanel(
              fluidRow(
@@ -44,32 +44,32 @@ ui <- fluidPage(
                column(4,
                       div(style = "margin-top: 25px;",
                           actionButton("search_btn", "Search"),
-                          # 使用 HTML 按钮绑定前端的 clearMap() 函数
+                          # The clearMap() function on the front-end using HTML button binding
                           tags$button("Clear", onclick = "clearMap()", 
                                       style = "margin-left: 10px;", class = "btn btn-default")
                       )
                )
              )
            ),
-           # 地图区域
+           # Map area
            div(id = "map", style = "height: 700px;")
     )
   ),
   
-  # 页脚
+  # footers
   fluidRow(
     column(
       12, align = "center",
       tags$footer(
         style = "margin-top: 20px; padding: 10px; font-size: 12px; background-color: #f8f9fa; border-top: 1px solid #e9ecef;",
-        HTML("Created by Wei Wang, Joshua Rosenberg, and Cameron Sublet at the University of Tennessee, Knoxville with the Community College Research Center at Teachers College, Columbia. 
+        HTML("Created by Wei Wang, Joshua Rosenberg, Cameron Sublet and Bret Staudt Willet with the Community College Research Center at Teachers College, Columbia. 
               Source code at: <a href='https://github.com/wwang93/CCRC_Mapping_JS' target='_blank'>GitHub</a>. 
               Thanks to funding from JC Morgan Chase.")
       )
     )
   ),
   
-  # 引入 Mapbox GL JS 资源和自定义 JS 文件
+  # Introducing Mapbox GL JS Resources and Custom JS Files
   tags$head(
     tags$link(href = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css", rel = "stylesheet"),
     tags$script(src = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"),

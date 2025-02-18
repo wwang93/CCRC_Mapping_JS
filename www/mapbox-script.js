@@ -1,19 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Setting the Mapbox Access Token
   mapboxgl.accessToken = mapboxToken;
   
+  // Initialize the map with center position set to [-95, 40] and zoom level 3.5
   const map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/streets-v11",
     center: [-95, 40],
-    zoom: 2.5
+    zoom: 3.5
   });
   
   map.addControl(new mapboxgl.NavigationControl());
   
+  // Global variable: Used to store popups created after a search and popups used on mouse hover.
+  var searchPopup;  
   let hoverPopup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
   let hoveredFeatureId = null;
-
-  // Add counties layer
+  
+  // Processing counties GeoJSON data sent from the backend
   Shiny.addCustomMessageHandler("updateCounties", function (geojsonData) {
     console.log("Received GeoJSON data:", geojsonData);
     
@@ -47,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
     
+    // Hover: displays county name and population information
     map.on("mousemove", "counties-layer", function (e) {
       if (e.features.length > 0) {
         if (hoveredFeatureId !== null) {
@@ -54,15 +59,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         hoveredFeatureId = e.features[0].id;
         map.setFeatureState({ source: "counties", id: hoveredFeatureId }, { hover: true });
-
+        
         const properties = e.features[0].properties;
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<strong>County:</strong> ${properties.county_name}<br><strong>Population:</strong> ${properties.population}`)
+          .setHTML("<strong>County:</strong> " + properties.county_name + "<br><strong>Population:</strong> " + properties.population)
           .addTo(map);
       }
     });
-
+    
     map.on("mouseleave", "counties-layer", function () {
       if (hoveredFeatureId !== null) {
         map.setFeatureState({ source: "counties", id: hoveredFeatureId }, { hover: false });
@@ -71,18 +76,26 @@ document.addEventListener("DOMContentLoaded", function () {
       hoverPopup.remove();
     });
   });
-
-  // Handle search update
+  
+  // Handle search result messages: show popup and fly to corresponding position
   Shiny.addCustomMessageHandler("updateSearch", function (coords) {
-    new mapboxgl.Popup()
+    if (searchPopup) {
+      searchPopup.remove();
+    }
+    searchPopup = new mapboxgl.Popup()
       .setLngLat([coords.lng, coords.lat])
       .setHTML(coords.popup)
       .addTo(map);
     map.flyTo({ center: [coords.lng, coords.lat], zoom: 8 });
   });
-
-  // Clear search
-  Shiny.addCustomMessageHandler("clearSearch", function () {
-    map.flyTo({ center: [-95, 40], zoom: 2.5 });
-  });
+  
+  // Define a global function clearMap() to be called directly by the Clear button.
+  window.clearMap = function () {
+    console.log("clearMap() called");
+    if (searchPopup) {
+      searchPopup.remove();
+      searchPopup = null;
+    }
+    map.flyTo({ center: [-95, 40], zoom: 3.5 });
+  };
 });
