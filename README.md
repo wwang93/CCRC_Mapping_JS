@@ -1,5 +1,7 @@
-README
+README: CCRC Green Job Mapping
 ================
+
+![Green Job Mapping logo](images/green-job-mapping-logo-small.png)
 
 ## Overview
 
@@ -8,6 +10,10 @@ docs for Mapbox GL JS : <https://docs.mapbox.com/mapbox-gl-js/api/>
 This app built for Hover function for demand side, we will use the US
 county population to have a try!
 
+
+
+---
+
 ## Data used for the app
 
 data folder, private:
@@ -15,10 +21,18 @@ data folder, private:
 
 Downlaod the data folder,rename it as raw-data.
 
+
+
+---
+
 ## Raw data used to create the data used for the app
 
 `pre-county-population.R` is used to create fake “demand” side data,
 which is US county level population data from tidycensus package.
+
+
+
+---
 
 ## Wei update the app on Feb 18th.
 
@@ -28,4 +42,9 @@ APP website：https://ed-analytics.shinyapps.io/CCRC_Mapping_JS/
 
 To run this app locally, set up the map token as a source file.
 
-The hover UI: ![Hover UI](Images/Hover.png)
+
+---
+
+## The hover UI 
+
+![Hover UI](images/hover.png)

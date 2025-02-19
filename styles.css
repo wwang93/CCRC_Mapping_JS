@@ -1,0 +1,125 @@
+/* import Google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+input[type="number"] {
+  max-width: 80%;
+}
+
+
+
+/* Customize the navbar background and font */
+.navbar {
+  background-color: #eeeae8;  /* Change to your desired background color */
+}
+
+.navbar-brand {
+  font-family: 'Exo', sans-serif;  /* Change to your desired font family */
+  color: #424c49;  /* Change the font color */
+  font-size: 28px; /* Change the font size */
+}
+
+.navbar-nav > li > a.active,
+.navbar-nav > li.active > a,
+.navbar-nav > li > a:hover,
+.navbar-nav > li > a:focus {
+  background-color: #99ea85 !important;  /* Change the hover and focus color */
+  font-weight: 600 !important;
+}
+
+/* Ensures the brand text and image align properly */
+.navbar-header .navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-header .navbar-brand img {
+  margin-right: 6px; /* Space between the logo and the text */
+}
+
+
+
+
+div.outer {
+  position: fixed;
+  top: 42px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+
+
+/* Customize fonts */
+body, label, input, button, select { 
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: #424c49;
+}
+
+title, h1, h2 { 
+  font-family: 'Exo', serif;
+  font-weight: 600; 
+}
+
+h3, h4 { 
+  font-family: 'Exo', serif;
+  font-weight: 400; 
+}
+
+
+
+/* change hyperlink text */
+a { 
+  color: #0645ad;  /* standard blue hyperlink color */
+  font-weight: 400; 
+}
+
+/* change hyperlink hover text */
+a:hover {
+  color: #e04300;
+  text-decoration: underline;
+}
+
+
+
+#controls {
+  /* Appearance */
+  background-color: #99ea85;
+  border: 1px solid #beb0a7;
+  padding: 0 20px 20px 20px;
+  cursor: move;
+  /* Fade out while not hovering */
+  opacity: 0.7;
+  zoom: 0.8;
+  transition: opacity 200ms 600ms;
+}
+
+#controls:hover {
+  /* Fade in while hovering */
+  opacity: 0.95;
+  transition-delay: 0;
+}
+
+/* Position and style footer */
+.footer {
+  font-size: 14px;
+  background-color: #eeeae8;
+  padding: 0px 20px;
+  width: 100%;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #beb0a7;
+}
+
+/* If not using map tiles, show a white background */
+.mapbox-container {
+  background-color: white !important;
+}
