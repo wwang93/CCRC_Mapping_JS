@@ -7,12 +7,13 @@ library(tidyverse)
 library(haven)
 library(tidycensus)
 
-county_population <- get_acs(
-  geography = "county",
-  variables = "B01003_001E", # Total population variable
-  year = 2021,
-  survey = "acs5"           # 5-year data
-)
+county_population <- 
+  get_acs(
+    geography = "county",
+    variables = "B01003_001E", # Total population variable
+    year = 2021,
+    survey = "acs5"           # 5-year data
+  )
 
 head(county_population)
 
@@ -46,7 +47,7 @@ counties_sf_size2 <- st_transform(counties_sf_size1, crs = 4326)
 #counties_sf_size2 <- counties_sf_size2 %>% 
   #as_mapbox_source()
 
-counties_sf_size2 %>% write_rds("counties_sf_processed.rds")
+counties_sf_size2 %>% write_rds("data/counties_sf_processed.rds")
 
 
 
@@ -62,7 +63,7 @@ ipeds_green_summed <- ipeds_green %>%
 ipeds_green_summed <- ipeds_green_summed %>% 
   pivot_longer(-unitid, names_to = "greencat", values_to = "size")
 
-write_rds(ipeds_green_summed, "ipeds_green_summed.rds")
+write_rds(ipeds_green_summed, "data/ipeds_green_summed.rds")
 
 
 
@@ -71,4 +72,4 @@ hdallyears <- read_dta("raw-data/hdallyears.dta")
 hdallyears <- hdallyears %>%
   filter(year == 2020)
 
-write_rds(hdallyears, "hdallyears.rds")
+write_rds(hdallyears, "data/hdallyears.rds")
