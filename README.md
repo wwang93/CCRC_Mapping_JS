@@ -20,9 +20,9 @@ Downlaod the data folder,rename it as raw-data.
 `pre-county-population.R` is used to create fake “demand” side data,
 which is US county level population data from tidycensus package.
 
-## Wei update the app on Feb 18th.
+## Wei update the app Weekly.
 
-UI_app.R and www/mapbox-script.JS are main files for the app.
+app.R and www/mapbox-script.JS are main files for the app.
 
 APP website：https://ed-analytics.shinyapps.io/CCRC_Mapping_JS/
 
