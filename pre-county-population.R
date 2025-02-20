@@ -7,6 +7,14 @@ library(tidyverse)
 library(haven)
 library(tidycensus)
 
+
+#########################################################
+#fake “demand” data
+
+## county level data
+
+
+### get the county population data from tidycensus
 county_population <- get_acs(
   geography = "county",
   variables = "B01003_001E", # Total population variable
@@ -16,41 +24,61 @@ county_population <- get_acs(
 
 head(county_population)
 
-library(dplyr)
-# select  Geo_ID;Nameand estimate
+
+### select  Geo_ID;Name and estimate
 counties_population <- county_population %>%
   select(GEOID, NAME, estimate) %>%
   rename(county_fips = GEOID, county_name = NAME, population = estimate)
 
-
-library(sf)
-library(urbnmapr)
+### get the urban map of counties
 counties_sf1 <- get_urbn_map("counties", sf = TRUE)
 
-# join counties_sf and counties_population
+### join counties_sf and counties_population
 library(tidyverse)
 counties_sf_size <- counties_sf1 %>%
   left_join(counties_population, by = c("county_fips" = "county_fips"))
+
+counties_sf_size
+
 
 counties_sf_size1 <- counties_sf_size %>%
   select(county_fips, county_name.y, population, geometry)%>%
   rename(county_name = county_name.y)
 
+counties_sf_size1
 
 counties_sf_size2 <- st_transform(counties_sf_size1, crs = 4326)
 
-
-
-### igore these lines, we don't use mapboxer
-#library(mapboxer)
-#counties_sf_size2 <- counties_sf_size2 %>% 
-  #as_mapbox_source()
+counties_sf_size2
 
 counties_sf_size2 %>% write_rds("counties_sf_processed.rds")
 
 
+### Simplified geometric data for faster loading
 
-###supply data
+### The parameter dTolerance is adjusted according to your data range and desired precision.
+counties_sf_simplified <- st_simplify(counties_sf_size2, dTolerance = 0.05, preserveTopology = TRUE)
+
+### save the simplified data
+write_rds(counties_sf_simplified, "counties_sf_simplified.rds")
+
+
+
+## Commuting Zone level data
+
+### read the commuting zone data
+library(readr)
+CZ_2000 <- read_csv("CZ_2000.csv")
+View(CZ_2000)
+
+CZ_2000 <- CZ_2000 %>%
+  rename()
+
+
+
+
+#########################################################
+###supply data########
 ipeds_green <- read_dta("raw-data/ipeds&green.dta")
 
 ipeds_green_summed <- ipeds_green %>%

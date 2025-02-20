@@ -2,113 +2,102 @@ library(shiny)
 library(jsonlite)
 library(geojsonio)
 library(dplyr)
+source("mapboxtoken_setup.R")  # This file defines the mapbox_token variable
 
 # Load data
 hdallyears <- readRDS("hdallyears.rds")
 ipeds_green_summed <- readRDS("ipeds_green_summed.rds")
-counties_sf <- readRDS("counties_sf_processed.rds")
+# counties_sf <- readRDS("counties_sf_processed.rds")
+counties_sf <- readRDS("counties_sf_simplified.rds")  # Load the simplified version
 
 # Ensure GeoJSON data has unique IDs for feature-state
 counties_sf <- counties_sf %>%
   mutate(id = row_number())  # Assign unique IDs to each county
 
-# Merge data
+# Merge data for institution search
 hdallyears_joined <- hdallyears %>%
   left_join(ipeds_green_summed, by = "unitid")
 
-# UI
 ui <- fluidPage(
-  titlePanel("CCRC Mapping with Mapbox GL JS"),
+  # Set initial CSS style: hide the map until fully loaded
+  tags$style(HTML("
+    #map { 
+      visibility: hidden;
+    }
+  ")),
+  titlePanel("CCRC Green Job Seek Mapping"),
   
+  # Layout: Left column for supply category selector, right column for search controls and the map container
   fluidRow(
-    column(
-      width = 10,
-      div(
-        style = "display: flex; align-items: center;",
-        textInput("search_term", "Search by Institution:",
-                  placeholder = "Type institution here...", width = "100%"),
-        actionButton("search_btn", "Search", style = "margin-left: 10px;"),
-        # Use HTML buttons and bind the clearMap() function directly to the frontend.
-        tags$button("Clear", onclick = "clearMap()", style = "margin-left: 10px;", class = "btn btn-default")
-      )
+    column(3,
+           wellPanel(
+             selectInput("selected_green_category",
+                         "Select Supply Category:",
+                         choices = c("Green New & Emerging", 
+                                     "Green Enhanced Skills", 
+                                     "Green Increased Demand"))
+           )
+    ),
+    column(9,
+           wellPanel(
+             fluidRow(
+               column(8,
+                      textInput("search_term", "Search by Institution:",
+                                placeholder = "Type institution here...", width = "100%")
+               ),
+               column(4,
+                      div(style = "margin-top: 25px;",
+                          actionButton("search_btn", "Search"),
+                          # Clear button calls the front-end clearMap() function directly
+                          tags$button("Clear", onclick = "clearMap()", 
+                                      style = "margin-left: 10px;", class = "btn btn-default")
+                      )
+               )
+             )
+           ),
+           div(id = "map", style = "height:750px;")
     )
   ),
   
+  # Footer
   fluidRow(
-    column(6, align = "center",
-           selectInput("selected_green_category",
-                       "Select Supply Category:",
-                       choices = c("Green New & Emerging", "Green Enhanced Skills", "Green Increased Demand"))
+    column(12, align = "center",
+           tags$footer(
+             style = "margin-top: 20px; padding: 10px; font-size: 12px; background-color: #f8f9fa; border-top: 1px solid #e9ecef;",
+             HTML("Created by Wei Wang, Joshua Rosenberg, Cameron Sublet and Bret Staudt Willet with the Community College Research Center at Teachers College, Columbia. 
+                  Source code at: <a href='https://github.com/wwang93/CCRC_Mapping_JS' target='_blank'>GitHub</a>. 
+                  Thanks to funding from JC Morgan Chase.")
+           )
     )
   ),
   
- 
-  
-  # Map output with JavaScript integration
-  fluidRow(
-    column(12, tags$div(id = "map", style = "height: 700px;"))
-  ),
-  
-  # Include Mapbox GL JS resources and our custom JS file
   tags$head(
+    # Include Mapbox GL JS CSS and JS library
     tags$link(href = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css", rel = "stylesheet"),
     tags$script(src = "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"),
+    # Include the custom JS file (which now loads static data on the front end)
     tags$script(src = "mapbox-script.js"),
-    tags$script(HTML(paste0("const mapboxToken = '", Sys.getenv("MAPBOX_TOKEN"), "';")))
-  ),
-  
-  fluidRow(
-    column(
-      width = 12, align = "center",
-      tags$footer(
-        style = "margin-top: 20px; padding: 10px; font-size: 12px; background-color: #f8f9fa; border-top: 1px solid #e9ecef;",
-        HTML("Created by Wei Wang, Joshua Rosenberg, and Cameron Sublet at the University of Tennessee, Knoxville with the Community College Research Center at Teachers College, Columbia. 
-              Source code at: <a href='https://github.com/wwang93/CCRC_Mapping_JS' target='_blank'>GitHub</a>. 
-              Thanks to funding from JC Morgan Chase.")
-      )
-    )
+    # Pass the mapboxToken variable to the front end
+    tags$script(HTML(paste0("const mapboxToken = '", mapbox_token, "';"))),
+    # Load Turf.js library (if further processing is needed)
+    tags$script(src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js")
   )
-  
-  
 )
 
-
-
-# Server
 server <- function(input, output, session) {
-  # Save counties_sf data to reactiveValues
-  map_data <- reactiveValues(
-    county_data = counties_sf
-  )
-  
-  # Convert counties_sf to GeoJSON and send to front end
-  observe({
-    if (!inherits(map_data$county_data, "sf")) {
-      stop("map_data$county_data must be an sf object")
-    }
-    
-    counties_geojson <- geojsonio::geojson_json(map_data$county_data)
-    
-    # Debug: output partial GeoJSON data
-    print("Sending GeoJSON data to frontend")
-    print(substr(counties_geojson, 1, 500))
-    
-    session$sendCustomMessage(type = "updateCounties", counties_geojson)
-  })
-  
-  # Search button: find records based on the entered school name and selected supply category
+  # Search button: Find records based on the entered institution name and selected supply category
   observeEvent(input$search_btn, {
     req(input$search_term)
     req(input$selected_green_category)
     
-    # Filter data by school name (instnm) and supply category (greencat)
+    # Filter data by institution name (instnm) and supply category (greencat)
     search_result <- hdallyears_joined %>%
       filter(grepl(input$search_term, instnm, ignore.case = TRUE),
              greencat == input$selected_green_category) %>%
       head(1)
     
     if (nrow(search_result) > 0) {
-      # Constructing the HTML content of the popup window: displaying the name of the school, the selected category, and the size value
+      # Construct the popup content: display the institution name, selected category, and the size value
       popup_text <- paste0(
         "<strong>", search_result$instnm, "</strong><br>",
         "Category: ", input$selected_green_category, "<br>",
@@ -125,8 +114,6 @@ server <- function(input, output, session) {
       showNotification("No Institution Found!", type = "error")
     }
   })
-  # Note: The Clear button calls the front-end clearMap() function directly in the UI.
-  # So there's no need for an additional observeEvent to handle the Clear button here.
 }
 
 shinyApp(ui, server)
