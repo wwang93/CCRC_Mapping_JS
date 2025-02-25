@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Set maximum bounds (limits) for the map view (roughly over the US)
   map.setMaxBounds([
-    [-130, 10],  // Southwest corner (roughly western and southern border)
-    [-60, 55]    // Northeast corner (roughly eastern and northern border)
+    [-130, 5],  // Southwest corner (roughly western and southern border)
+    [-60, 60]    // Northeast corner (roughly eastern and northern border)
   ]);
   
   // Add navigation controls to the map

@@ -31,11 +31,40 @@ ui <- fluidPage(
   fluidRow(
     column(3,
            wellPanel(
+             # Existing supply category selector
              selectInput("selected_green_category",
                          "Select Supply Category:",
                          choices = c("Green New & Emerging", 
                                      "Green Enhanced Skills", 
-                                     "Green Increased Demand"))
+                                     "Green Increased Demand")),
+             # New Filter: Climate Degree
+             selectInput("climate_degree",
+                         "Filter: Climate Degree",
+                         choices = c("All Degrees", 
+                                     "Energy & Climate Connected Degree", 
+                                     "Non-Energy & Climate Connected Degree")),
+             # New Filter: Career Cluster
+             selectInput("career_cluster",
+                         "Filter: Career Cluster",
+                         choices = c("All Programs",
+                                     "Advanced Manufacturing",
+                                     "Agriculture",
+                                     "Arts, Entertainment & Design",
+                                     "Construction",
+                                     "Digital Technology",
+                                     "Education",
+                                     "Energy & Natural Resources",
+                                     "Financial Services",
+                                     "Healthcare & Human Services",
+                                     "Hospitality, Events & Tourism",
+                                     "Management & Entrepreneurship",
+                                     "Marketing & Sales",
+                                     "Public Service & Safety",
+                                     "Supply Chain & Transportation")),
+             # New Filter: Entry Education Level
+             selectInput("entry_education",
+                         "Filter: Entry Education Level",
+                         choices = c("Less than BA", "BA and Higher"))
            )
     ),
     column(9,
@@ -48,7 +77,6 @@ ui <- fluidPage(
                column(4,
                       div(style = "margin-top: 25px;",
                           actionButton("search_btn", "Search"),
-                          # Clear button calls the front-end clearMap() function directly
                           tags$button("Clear", onclick = "clearMap()", 
                                       style = "margin-left: 10px;", class = "btn btn-default")
                       )
